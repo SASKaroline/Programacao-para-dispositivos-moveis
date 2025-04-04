@@ -10,7 +10,7 @@ export default function App() {
       nome: "São Paulo",
       anoFundacao: 1930,
       mascote: "Santo Paulo",
-      imagem: "https://i.pinimg.com/736x/6b/e9/76/6be97615185858cee9e0905d0590e796.jpg",
+      imagem: "https://i.pinimg.com/736x/ce/b7/97/ceb797ed55655125064dfe4a061bdde1.jpg",
       jogadores: [
       { nome: "Lucas Moura", numero: 7, imagem: "https://i.pinimg.com/474x/ef/fa/75/effa75f07d8e767724000a13c8a36edb.jpg" },
       { nome: "Oscar", numero: 11, imagem: "https://i.pinimg.com/736x/18/be/63/18be639db3a782293733073ed4fd2335.jpg" },
@@ -24,7 +24,7 @@ export default function App() {
     nome: "Flamengo",
     anoFundacao: 1895,
     mascote: "Urubu",
-    imagem: "https://i.pinimg.com/236x/16/db/d2/16dbd20fd582e025dc54cc3fbd1839c9.jpg",
+    imagem: "https://i.pinimg.com/474x/e3/2c/f7/e32cf72569db745a517570640d659d9f.jpg",
     jogadores: [
     { nome: "Gabriel Barbosa", numero: 9, imagem: "https://i.pinimg.com/474x/1d/9f/5d/1d9f5de58831c9913f925a7155bdc7da.jpg" },
     { nome: "Arrascaeta", numero: 14, imagem: "https://i.pinimg.com/474x/cf/ad/d9/cfadd92de5e581ac5505e3d325f8b9b2.jpg" },
@@ -37,7 +37,7 @@ export default function App() {
     nome: "Vasco",
     anoFundacao: 1944 ,
     mascote: "Almirante",
-    imagem: "https://i.pinimg.com/236x/01/1f/31/011f317c76941ce53a2addcc9cfbf84a.jpg",
+    imagem: "https://i.pinimg.com/736x/67/16/3f/67163f45cbcd07d497d9677b407d580d.jpg",
     jogadores: [
     { nome: "David", numero: 29, imagem: "https://lncimg.lance.com.br/uploads/2024/08/AGIF24071810385399-scaled-aspect-ratio-512-320.jpg" },
     { nome: "Rayan", numero: 77, imagem: "https://ds-images.bolavip.com/news/image/1200/740/?src=https://images.bolavip.com/webp/br/full/BBR_20231130_BBR_269603_AGIF23062220344928-e1701359102109.webp" },
@@ -54,9 +54,9 @@ export default function App() {
     jogadores: [
     { nome: "Hulk", numero: 7, imagem: "https://i.pinimg.com/474x/ff/9b/38/ff9b384ca6fd51ce56afbdfe14e5b67d.jpg" },
     { nome: "Nacho Fernández", numero: 26, imagem: "https://i.pinimg.com/474x/63/fa/af/63faaf414f6278f7187f73bad233ccf2.jpg" },
-    { nome: "Everson", numero: 22, imagem: "https://i.pinimg.com/236x/2d/2f/f8/2d2ff8cad95ac498721d23269ba9540c.jpg" },
+    { nome: "Everson", numero: 22, imagem: "https://i.pinimg.com/474x/c1/9e/e7/c19ee7f863bff6a2177b1d0ae1427332.jpg" },
     { nome: "Keno", numero: 11, imagem: "https://i.pinimg.com/236x/6b/1c/c2/6b1cc2d9050291b69b7e6b3be1341a8a.jpg" },
-    { nome: "Jair", numero: 8, imagem: "https://i.pinimg.com/236x/f8/55/29/f8552940089ced07181f7cbff4d6b7f7.jpg" },
+    { nome: "Jair", numero: 8, imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOf-h2kwGRPSkF1cRxhnTLSEuZDR4_opAJdg&s" },
     ],
     },
     ];
@@ -66,7 +66,7 @@ export default function App() {
       <View style={styles.container}>
         <StatusBar style="auto" />
 
-        <Text variant='displayMedium' style={{ marginBottom: 20}}>Lista de Times</Text>
+    <Text variant='displayMedium' style={{ marginBottom: 10, color: '#3800a8'}}>Lista de Times</Text>
 
         <FlatList
           data={times}
@@ -89,9 +89,9 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 30,
+    paddingTop: 40,
     flex: 1,
-    backgroundColor: '#c1a2ff',
+    backgroundColor: '#eae0ff',
     alignItems: 'center',
     justifyContent: 'center',
   },
