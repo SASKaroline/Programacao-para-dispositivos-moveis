@@ -8,14 +8,39 @@ export default function ListaComponente() {
     return (
         <View style={styles.container}>
 
-            {listaCarros.map(
-                carro => <Text style={styles.texto}>{carro}</Text>
+            {
+                listaCarros.map(
+                    (carro) => <Text>{carro}</Text>
                 )
             }
+
+            {
+                listaCarros.map(
+                    (carro) => <Text>{carro}</Text>
+                )
+            }
+
+            {
+                listaCarros.map(
+                    (carro) => <Text>{carro}</Text>
+                )
+            }
+
+            {
+                listaCarros.map(
+                    (carro) => {
+                        <View style={styles.containerAmarelo}>
+                            <Text>{carro}</Text>
+                        </View>
+                    }
+                )
+            }
+
 
         </View>
     )
 }
+    
 
 const styles = StyleSheet.create({
     container: {
@@ -24,11 +49,18 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 20,
         marginTop: 20,
-        alignItems: "center"
+        alignItems: "center",
+
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
     },
     texto: {
         fontSize: 20,
         fontWeight: 600,
         color: "white"
     },
+
 })
