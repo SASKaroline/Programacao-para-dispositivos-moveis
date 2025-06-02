@@ -13,14 +13,24 @@ export default function Biblioteca({ navigation }) {
 
   useEffect(() => {
     const load = async () => {
+      console.log('Tentando carregar livros...'); // <--- ADICIONE AQUI
       const data = await getBooks();
-      setBooks(data);
+      console.log('Livros carregados do storage:', data); // <--- ADICIONE AQUI (MUITO IMPORTANTE)
+      if (data && Array.isArray(data)) { // <--- ADICIONE VERIFICAÇÃO
+         setBooks(data);
+         console.log(`Número de livros carregados: ${data.length}`); // <--- ADICIONE AQUI
+      } else {
+         console.error('Dados dos livros inválidos ou nulos:', data); // <--- ADICIONE AQUI
+         setBooks([]); // Garante que books seja um array
+      }
     };
     const unsubscribe = navigation.addListener('focus', load);
+    // load(); // descomente esta linha para carregar na primeira vez também, se necessário
     return unsubscribe;
   }, [navigation]);
 
   const renderItem = ({ item }) => {
+    console.log('Renderizando item:', item.title, item.id);
     const progresso =
       item.statusLeitura === 'Lendo' && item.progresso
         ? parseFloat(item.progresso.replace('%', '')) / 100
@@ -35,6 +45,9 @@ export default function Biblioteca({ navigation }) {
     ) : (
       <BookGridItem {...commonProps} />
     );
+    if (books.length === 0) { // <--- ADICIONE ESTA VERIFICAÇÃO
+     console.log('Nenhum livro para exibir na FlatList.');
+  }
   };
 
   return (
@@ -55,12 +68,13 @@ export default function Biblioteca({ navigation }) {
         />
       </View>
       <FlatList
-        key={viewMode} // Importante para o numColumns funcionar corretamente ao trocar
+        key={viewMode}
         data={books}
-        keyExtractor={(item) => item.id.toString()} // Garanta que seja string
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        numColumns={viewMode === 'grid' ? 2 : 1} // Ajustado para 2 colunas no grid para melhor visual
+        numColumns={viewMode === 'grid' ? 2 : 1}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={<Text style={{color: 'white', textAlign: 'center', marginTop: 20}}>Nenhum livro na biblioteca.</Text>} // <--- ADICIONE PARA VER SE A LISTA ESTÁ VAZIA
       />
       <FAB
         icon="plus"
@@ -81,13 +95,6 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     backgroundColor: '#1E1E1E', // Um pouco mais claro que o fundo para destacar
-  },
-  // segmentedButtons: { // Estilos para o componente SegmentedButtons em si
-  //   backgroundColor: '#2C2C2C', // Exemplo de cor de fundo para os botões
-  // },
-  buttonStyle: { // Estilo para cada botão individual dentro do SegmentedButtons
-    // borderColor: 'gray', // Cor da borda
-    // backgroundColor: '#333', // Cor de fundo quando não selecionado
   },
   listContent: {
     paddingHorizontal: 8, // Espaçamento nas laterais da lista

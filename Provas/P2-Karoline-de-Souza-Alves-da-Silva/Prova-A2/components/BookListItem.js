@@ -1,24 +1,25 @@
 // components/BookListItem.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { ProgressBar, useTheme } from 'react-native-paper'; // Adicionado useTheme
+import { ProgressBar, useTheme } from 'react-native-paper';
 
-// Supondo que você tenha uma imagem de capa ou um placeholder
 const DEFAULT_COVER = 'https://via.placeholder.com/100x150.png?text=Capa';
 
 export default function BookListItem({ item, navigation, progresso }) {
-  const { colors } = useTheme(); // Para usar cores do tema, se aplicável
+  const { colors } = useTheme();
 
-  // Função para navegar para detalhes ou formulário de edição
+  // Função para navegar para detalhes
   const handlePress = () => {
-    navigation.navigate('BookForm', { bookId: item.id }); // Ou 'BookDetails'
+    // Linha Alterada Abaixo:
+    navigation.navigate('BookDetails', { book: item }); // <--- CORREÇÃO AQUI
   };
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.card}>
       <Image
-        source={{ uri: item.coverImage || DEFAULT_COVER }}
+        source={{ uri: item.thumbnail || DEFAULT_COVER }} // Usando item.thumbnail como discutido anteriormente
         style={styles.coverImage}
+        // onError={() => console.log(`Erro ao carregar imagem (ListItem): ${item.thumbnail || DEFAULT_COVER}`)}
       />
       <View style={styles.infoContainer}>
         <Text style={[styles.title, { color: 'white' }]}>{item.title}</Text>
@@ -32,7 +33,7 @@ export default function BookListItem({ item, navigation, progresso }) {
           <View style={styles.progressContainer}>
             <ProgressBar
               progress={progresso}
-              color={colors.primary || '#BB86FC'} // Cor da barra de progresso
+              color={colors.primary || '#BB86FC'}
               style={styles.progressBar}
             />
             <Text style={[styles.progressText, { color: '#C0C0C0' }]}>
@@ -45,25 +46,28 @@ export default function BookListItem({ item, navigation, progresso }) {
   );
 }
 
+// Seus estilos (styles) permanecem os mesmos
+// ... (copie seus estilos aqui)
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: '#1E1E1E', // Cor de fundo do card, similar ao exemplo
+    backgroundColor: '#1E1E1E',
     borderRadius: 8,
     padding: 12,
     marginVertical: 8,
-    marginHorizontal: 8, // Ajustado para ter margem dos dois lados se estiver no container da lista
-    elevation: 3, // Sombra para Android
-    shadowColor: '#000', // Sombra para iOS
+    marginHorizontal: 8,
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
   },
   coverImage: {
-    width: 70, // Ajuste conforme necessário
-    height: 100, // Ajuste conforme necessário
+    width: 70,
+    height: 100,
     borderRadius: 4,
     marginRight: 12,
+    backgroundColor: 'grey', // Para debug, como sugerido antes
   },
   infoContainer: {
     flex: 1,
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressBar: {
-    flex: 1, // Para a barra ocupar o espaço disponível
+    flex: 1,
     height: 8,
     borderRadius: 4,
   },
