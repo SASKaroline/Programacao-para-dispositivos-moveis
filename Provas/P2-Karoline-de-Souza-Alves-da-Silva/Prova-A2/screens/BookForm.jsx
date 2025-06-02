@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import {
   TextInput,
   Button,
   HelperText,
   List,
   Divider,
-  Snackbar
+  Snackbar,
+  Checkbox,
+  RadioButton,
+  Text
 } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,25 +25,33 @@ const schema = yup.object().shape({
   year: yup.string().matches(/^[0-9]{4}$/, 'Ano inválido').required('Ano obrigatório'),
   genre: yup.string().required('Gênero obrigatório'),
   description: yup.string().required('Descrição obrigatória'),
+  thumbnail: yup.string().url('URL da capa inválida').nullable(),
+  statusLeitura: yup.string().required('Informe o status da leitura'),
+  progresso: yup.string().nullable(),
+  favorite: yup.boolean(),
+  pageCount: yup.string().nullable(),
 });
+
+const statusOptions = ['Lido', 'Lendo', 'Relendo', 'Abandonado', 'Querendo Ler'];
 
 export default function BookForm({ navigation, route }) {
   const isEdit = !!route?.params?.book;
-
   const {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: route?.params?.book || {},
+    defaultValues: route?.params?.book || { favorite: false },
   });
 
   const [suggestions, setSuggestions] = useState([]);
   const [titleSearch, setTitleSearch] = useState('');
   const [debouncedTitle] = useDebounce(titleSearch, 500);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const statusLeitura = watch('statusLeitura');
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -61,6 +72,8 @@ export default function BookForm({ navigation, route }) {
     setValue('year', info.publishedDate?.slice(0, 4) || '');
     setValue('genre', info.categories?.[0] || '');
     setValue('description', info.description || '');
+    setValue('thumbnail', info.imageLinks?.thumbnail || '');
+    setValue('pageCount', info.pageCount?.toString() || '');
     setSuggestions([]);
   };
 
@@ -71,7 +84,7 @@ export default function BookForm({ navigation, route }) {
       await saveBook({ ...data, id: Date.now().toString() });
     }
     setSnackbarVisible(true);
-    navigation.navigate('HomeScreen');
+    navigation.goBack();
   };
 
   return (
@@ -90,9 +103,7 @@ export default function BookForm({ navigation, route }) {
               }}
               style={styles.input}
             />
-            <HelperText type="error" visible={!!errors.title}>
-              {errors.title?.message}
-            </HelperText>
+            <HelperText type="error" visible={!!errors.title}>{errors.title?.message}</HelperText>
             {suggestions.map((item) => (
               <List.Item
                 key={item.id}
@@ -112,9 +123,7 @@ export default function BookForm({ navigation, route }) {
         render={({ field: { onChange, value } }) => (
           <>
             <TextInput label="Autor" value={value} onChangeText={onChange} style={styles.input} />
-            <HelperText type="error" visible={!!errors.author}>
-              {errors.author?.message}
-            </HelperText>
+            <HelperText type="error" visible={!!errors.author}>{errors.author?.message}</HelperText>
           </>
         )}
       />
@@ -130,13 +139,9 @@ export default function BookForm({ navigation, route }) {
               onChangeText={onChange}
               keyboardType="numeric"
               style={styles.input}
-              render={(props) => (
-                <TextInputMask {...props} type="custom" options={{ mask: '9999' }} />
-              )}
+              render={(props) => <TextInputMask {...props} type="custom" options={{ mask: '9999' }} />}
             />
-            <HelperText type="error" visible={!!errors.year}>
-              {errors.year?.message}
-            </HelperText>
+            <HelperText type="error" visible={!!errors.year}>{errors.year?.message}</HelperText>
           </>
         )}
       />
@@ -147,9 +152,7 @@ export default function BookForm({ navigation, route }) {
         render={({ field: { onChange, value } }) => (
           <>
             <TextInput label="Gênero" value={value} onChangeText={onChange} style={styles.input} />
-            <HelperText type="error" visible={!!errors.genre}>
-              {errors.genre?.message}
-            </HelperText>
+            <HelperText type="error" visible={!!errors.genre}>{errors.genre?.message}</HelperText>
           </>
         )}
       />
@@ -159,17 +162,63 @@ export default function BookForm({ navigation, route }) {
         name="description"
         render={({ field: { onChange, value } }) => (
           <>
+            <TextInput label="Descrição" multiline value={value} onChangeText={onChange} style={styles.input} />
+            <HelperText type="error" visible={!!errors.description}>{errors.description?.message}</HelperText>
+          </>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="thumbnail"
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            label="URL da Capa (opcional)"
+            value={value}
+            onChangeText={onChange}
+            style={styles.input}
+          />
+        )}
+      />
+
+      <Text style={styles.radioLabel}>Status de Leitura</Text>
+      <Controller
+        control={control}
+        name="statusLeitura"
+        render={({ field: { onChange, value } }) => (
+          <RadioButton.Group onValueChange={onChange} value={value}>
+            {statusOptions.map((option) => (
+              <RadioButton.Item key={option} label={option} value={option} />
+            ))}
+          </RadioButton.Group>
+        )}
+      />
+      <HelperText type="error" visible={!!errors.statusLeitura}>{errors.statusLeitura?.message}</HelperText>
+
+      {statusLeitura === 'Lendo' && (
+        <Controller
+          control={control}
+          name="progresso"
+          render={({ field: { onChange, value } }) => (
             <TextInput
-              label="Descrição"
+              label="Progresso da Leitura (ex: 120/300 ou 40%)"
               value={value}
               onChangeText={onChange}
-              multiline
               style={styles.input}
             />
-            <HelperText type="error" visible={!!errors.description}>
-              {errors.description?.message}
-            </HelperText>
-          </>
+          )}
+        />
+      )}
+
+      <Controller
+        control={control}
+        name="favorite"
+        render={({ field: { onChange, value } }) => (
+          <Checkbox.Item
+            label="Marcar como favorito"
+            status={value ? 'checked' : 'unchecked'}
+            onPress={() => onChange(!value)}
+          />
         )}
       />
 
@@ -192,4 +241,5 @@ const styles = StyleSheet.create({
   container: { padding: 16, backgroundColor: '#fff' },
   input: { marginBottom: 8 },
   button: { marginTop: 16 },
+  radioLabel: { marginTop: 16, fontSize: 16, fontWeight: 'bold' },
 });
