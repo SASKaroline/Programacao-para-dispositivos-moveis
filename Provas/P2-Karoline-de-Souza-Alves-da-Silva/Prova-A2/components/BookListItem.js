@@ -3,41 +3,49 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { ProgressBar, useTheme } from 'react-native-paper';
 
-const DEFAULT_COVER = 'https://via.placeholder.com/100x150.png?text=Capa';
+const DEFAULT_COVER = 'https://via.placeholder.com/100x150.png?text=Capa'; // Imagem placeholder
 
 export default function BookListItem({ item, navigation, progresso }) {
-  const { colors } = useTheme();
+  // 'progresso' é um valor numérico entre 0.0 e 1.0 (ex: 0.98 para 98%)
+  // Ele é calculado na tela Biblioteca.js e passado para este componente.
+  const { colors } = useTheme(); // Hook para usar as cores do tema definido no App.js
 
-  // Função para navegar para detalhes
   const handlePress = () => {
-    // Linha Alterada Abaixo:
-    navigation.navigate('BookDetails', { book: item }); // <--- CORREÇÃO AQUI
+    // Navega para a tela de detalhes do livro, passando o objeto 'item' (livro) como parâmetro
+    navigation.navigate('BookDetails', { book: item });
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.card}>
+    <TouchableOpacity 
+      onPress={handlePress} 
+      style={[styles.card, { backgroundColor: colors.surface }]} // Fundo do card usa cor da superfície do tema
+    >
       <Image
-        source={{ uri: item.thumbnail || DEFAULT_COVER }} // Usando item.thumbnail como discutido anteriormente
+        source={{ uri: item.thumbnail || DEFAULT_COVER }} // Usa a capa do livro ou o placeholder
         style={styles.coverImage}
-        // onError={() => console.log(`Erro ao carregar imagem (ListItem): ${item.thumbnail || DEFAULT_COVER}`)}
+        onError={() => console.log(`Erro ao carregar imagem (ListItem): ${item.thumbnail}`)} // Opcional: para debug de imagem
       />
       <View style={styles.infoContainer}>
-        <Text style={[styles.title, { color: 'white' }]}>{item.title}</Text>
-        <Text style={[styles.author, { color: '#B0B0B0' }]}>{item.author}</Text>
+        <Text style={[styles.title, { color: colors.onSurface }]}>{item.title}</Text>
+        <Text style={[styles.author, { color: colors.onSurfaceVariant }]}>{item.author}</Text>
+
         {item.statusLeitura && (
-          <Text style={[styles.status, { color: '#C0C0C0' }]}>
+          <Text style={[styles.status, { color: colors.onSurfaceVariant }]}>
             Status: {item.statusLeitura}
           </Text>
         )}
-        {progresso !== null && (
+
+        {/* Seção da Barra de Progresso e Porcentagem */}
+        {/* Condicional: Só mostra se o status for "Lendo" e houver um progresso válido */}
+        {item.statusLeitura === 'Lendo' && progresso !== null && progresso >= 0 && (
           <View style={styles.progressContainer}>
             <ProgressBar
-              progress={progresso}
-              color={colors.primary || '#BB86FC'}
+              progress={progresso} // Valor do progresso (0.0 a 1.0)
+              color={colors.primary} // Cor primária do tema para a barra
               style={styles.progressBar}
             />
-            <Text style={[styles.progressText, { color: '#C0C0C0' }]}>
-              {Math.round(progresso * 100)}%
+            <Text style={[styles.progressText, { color: colors.onSurfaceVariant }]}>
+              {Math.round(progresso * 100)}% 
             </Text>
           </View>
         )}
@@ -46,59 +54,52 @@ export default function BookListItem({ item, navigation, progresso }) {
   );
 }
 
-// Seus estilos (styles) permanecem os mesmos
-// ... (copie seus estilos aqui)
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    backgroundColor: '#1E1E1E',
+    flexDirection: 'row', // Imagem ao lado das informações
     borderRadius: 8,
     padding: 12,
-    marginVertical: 8,
-    marginHorizontal: 8,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    marginVertical: 6,    // Espaçamento vertical entre os itens
+    marginHorizontal: 16, // Espaçamento horizontal (igual ao BookForm para consistência)
+    // elevation: 2, // O PaperProvider já aplica elevação com base no tema/modo do Card
   },
   coverImage: {
-    width: 70,
-    height: 100,
-    borderRadius: 4,
-    marginRight: 12,
-    backgroundColor: 'grey', // Para debug, como sugerido antes
+    width: 70,             // Largura da imagem da capa
+    height: 100,           // Altura da imagem da capa
+    borderRadius: 4,       // Bordas levemente arredondadas para a capa
+    marginRight: 12,       // Espaço entre a capa e as informações
+    backgroundColor: '#555', // Cor de fundo para o placeholder da imagem
   },
   infoContainer: {
-    flex: 1,
-    justifyContent: 'center',
+    flex: 1,               // Faz com que o container de informações ocupe o espaço restante
+    justifyContent: 'center', // Centraliza o conteúdo verticalmente se houver espaço
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,       // Pequeno espaço abaixo do título
   },
   author: {
     fontSize: 14,
-    marginBottom: 6,
+    marginBottom: 4,       // Espaço abaixo do autor
   },
   status: {
     fontSize: 12,
-    fontStyle: 'italic',
-    marginBottom: 4,
+    // fontStyle: 'italic', // Opcional, se quiser o status em itálico
+    marginBottom: 4,       // Espaço abaixo do status
   },
   progressContainer: {
-    marginTop: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 6,          // Espaço acima da barra de progresso
+    flexDirection: 'row',  // Coloca a barra e o texto lado a lado
+    alignItems: 'center',  
   },
   progressBar: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
+    flex: 1,               
+    height: 8,            
+    borderRadius: 4,       
   },
   progressText: {
     fontSize: 12,
-    marginLeft: 8,
+    marginLeft: 8,        
   },
 });
